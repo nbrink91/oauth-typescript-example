@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Token } from './Entity/Token';
-import { randomBytes } from 'crypto';
 import { getManager } from 'typeorm';
 
 export class Controller {
