@@ -7,19 +7,22 @@ const app = express();
 
 createConnection({
     type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "postgres",
-    password: "postgres",
-    database: "postgres",
+    host: process.env.POSTGRES_SERVER || 'localhost',
+    port: Number(process.env.POSTGRES_PORT) || 5432,
+    username: process.env.POSTGRES_USERNAME || 'postgres',
+    password: process.env.POSTGRES_PASSWORD || 'postgres',
+    database: process.env.POSTGRES_DATABASE || 'postgres',
     entities: [
         Token
     ],
     synchronize: true,
     logging: true
-}).then(connection => {
+}).then(() => {
     const controller = new Controller();
 
+    app.get('/', (req, res) => {
+        res.send('Success');
+    });
     app.post('/token', controller.postToken);
 
     app.listen(3000, () => {

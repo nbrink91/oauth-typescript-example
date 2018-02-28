@@ -7,9 +7,13 @@ export class Controller {
     {
         const token = new Token();
         token.client_token = 'ABC123';
+        token.refresh_token = 'SOMETOKEN';
 
         getManager().save(token).then(token => {
-            res.json(token);
+            res.json({
+                client_token: token.client_token,
+                refresh_token: token.refresh_token
+            });
         }).catch(err => {
             console.error(err);
         });
