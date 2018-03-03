@@ -20,9 +20,7 @@ createConnection({
 }).then(() => {
     const controller = new Controller();
 
-    app.get('/', (req, res) => {
-        res.send('Success');
-    });
+    app.get('/', controller.validateToken);
     app.post('/token', controller.postToken);
 
     app.listen(3000, () => {
