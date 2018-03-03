@@ -7,12 +7,6 @@ export class Token {
     id: number;
 
     @Column("varchar")
-    client_id: string;
-
-    @Column("varchar")
-    client_secret: string;
-
-    @Column("varchar")
     client_token: string;
 
     @Column("varchar")

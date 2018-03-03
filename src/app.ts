@@ -2,6 +2,7 @@ import express from 'express';
 import { Controller } from './Controller';
 import { Token } from './Entity/Token';
 import { createConnection } from 'typeorm';
+import { Client } from './Entity/Client';
 
 const app = express();
 
@@ -13,6 +14,7 @@ createConnection({
     password: process.env.POSTGRES_PASSWORD || 'postgres',
     database: process.env.POSTGRES_DATABASE || 'postgres',
     entities: [
+        Client,
         Token
     ],
     synchronize: true,
@@ -20,8 +22,10 @@ createConnection({
 }).then(() => {
     const controller = new Controller();
 
-    app.get('/', controller.validateToken);
-    app.post('/token', controller.postToken);
+    // TODO: This should likely be refactored into a server side script or something protected.
+    app.post('/client', controller.generateClient);
+    
+    app.post('/token', controller.generateToken);
 
     app.listen(3000, () => {
         console.log("App started on port 3000.")

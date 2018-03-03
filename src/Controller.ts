@@ -1,30 +1,43 @@
 import { Request, Response } from 'express';
 import { Token } from './Entity/Token';
-import { getManager, getRepository } from 'typeorm';
+import { Client } from './Entity/Client';
+import { getManager } from 'typeorm';
 import { Encryption } from './Service/Encryption';
+import { randomBytes } from 'crypto';
 
 export class Controller {
-    postToken(req: Request, res: Response): void
+    generateClient(req: Request, res: Response): void
     {
-        const token = new Token();
-        token.client_id = 'ABC123';
-        token.client_secret = 'TopSecret123';
-        token.client_token = 'NotSoSecret';
-        token.refresh_token = 'SomeToken';
+        const client = new Client();
+        client.client_id = randomBytes(16).toString('hex');
+        client.client_secret = randomBytes(16).toString('hex');
 
-        res.json(token);
+        const unencryptedClient = { ... client };
 
-        Encryption.hashToken(token).then(token => {
-            getManager().save(token).then(console.log).catch(console.error);
+        Encryption.hashClient(client).then(client =>
+            getManager().save(client).then(() =>
+                res.json(unencryptedClient)
+            ).catch(console.error)
+        ).catch(console.error);
+    }
+
+    generateToken(req: Request, res: Response): void
+    {
+        Encryption.compareSecrets(req.query.client_id, req.query.client_secret).then(result => {
+            if (result === true) {
+                const token = new Token();
+                token.client_token = randomBytes(16).toString('hex');
+                token.refresh_token = randomBytes(16).toString('hex');
+
+                const unencryptedToken = { ... token };
+
+                Encryption.hashToken(token).then(token => {
+                    getManager().save(token).then(() => {
+                        res.json(unencryptedToken);
+                    }).catch(console.error);
+                }).catch(console.error);
+            }
+            // TODO: Handle failed compare.
         }).catch(console.error);
     };
-
-    validateToken(req: Request, res: Response): void
-    {
-        console.log(req.query);
-
-        Encryption.compareSecrets(req.query.client_id, req.query.client_secret).then(console.log).catch(console.error);
-
-        res.send('test');
-    }
 }
