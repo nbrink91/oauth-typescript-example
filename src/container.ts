@@ -1,8 +1,8 @@
 import { Container } from "inversify";
 import GeneratorInterface from './Service/GeneratorInterface';
-import GeneratorMock from "./Service/GeneratorMock";
+import Generator from "./Service/Generator";
 
 const container = new Container();
-container.bind<GeneratorInterface>(GeneratorMock).toSelf();
+container.bind<GeneratorInterface>("Generator").to(Generator);
 
 export default container;

@@ -6,13 +6,19 @@ import { injectable, inject } from 'inversify';
 import Token from './Entity/Token';
 import TokenResponse from './Model/TokenResponse'
 import Client from './Entity/Client';
-import Generator from './Service/Generator';
+import GeneratorInterface from './Service/GeneratorInterface';
 
 @injectable()
 export default class Controller {
+    private generator: GeneratorInterface;
+
     constructor(
-        @inject(Generator) public generator: Generator
-    ) { }
+        @inject("Generator") generator: GeneratorInterface
+    ) {
+        console.log(generator);
+        console.log("THING");
+        this.generator = generator;
+    }
 
     statusCheck(req: Request, res: Response): void
     {
