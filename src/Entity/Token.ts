@@ -1,14 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import Client from './Client';
 
 @Entity()
-@Index(['client_token', 'refresh_token'])
-export class Token {
+@Index(['accessToken', 'refreshToken'])
+export default class Token {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column("varchar")
-    client_token: string;
+    @ManyToOne(type => Client, {
+        nullable: false
+    })
+    @JoinColumn({
+        name: 'client_id'
+    })
+    client: Client;
 
-    @Column("varchar")
-    refresh_token: string;
+    @Column({
+        type: 'varchar',
+        name: 'access_token'
+    })
+    accessToken: string;
+
+    @Column({
+        type: 'timestamp',
+        default: new Date()
+    })
+    created: Date;
+
+    @Column({
+        type: 'timestamp'
+    })
+    expiration: Date;
+
+    @Column({
+        type: 'varchar',
+        name: 'refresh_token'
+    })
+    refreshToken: string;
 }

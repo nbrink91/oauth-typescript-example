@@ -1,19 +1,30 @@
 import { Request, Response } from 'express';
-import { Token } from './Entity/Token';
-import { Client } from './Entity/Client';
 import { getManager } from 'typeorm';
-import { Encryption } from './Service/Encryption';
-import { Generate } from './Service/Generate';
 import { randomBytes } from 'crypto';
+import { injectable, inject } from 'inversify';
 
-export class Controller {
-    generateClient(req: Request, res: Response): void
+import Token from './Entity/Token';
+import TokenResponse from './Model/TokenResponse'
+import Client from './Entity/Client';
+import Generator from './Service/Generator';
+
+@injectable()
+export default class Controller {
+    constructor(
+        @inject(Generator) public generator: Generator
+    ) { }
+
+    statusCheck(req: Request, res: Response): void
     {
-        Generate.client().then(client => res.json(client)).catch(console.error);
+        res.send('Success');
     }
 
-    generateToken(req: Request, res: Response): void
+    postToken(req: Request, res: Response): void
     {
-        Generate.token(req.query.client_id, req.query.client_secret).then(token => res.json(token)).catch(console.error);
+        this.generator.token(req.query.client_id, req.query.client_secret).then(token => {
+            const tokenResponse = new TokenResponse(token.accessToken, 3600, 'bearer');
+
+            res.json(tokenResponse);
+        }).catch(console.error);
     };
 }

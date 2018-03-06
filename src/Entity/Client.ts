@@ -1,11 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity()
-@Index(['client_id', 'client_secret'])
-export class Client {
-    @PrimaryColumn("varchar")
-    client_id: string;
+@Index(['id', 'secret'])
+export default class Client {
+    @PrimaryColumn({
+        type: 'varchar',
+        name: 'id'
+    })
+    id: string;
 
-    @Column("varchar")
-    client_secret: string;
+    @Column({
+        type: 'varchar',
+        name: 'secret'
+    })
+    secret: string;
+
+    @Column({
+        type: 'timestamp',
+        default: new Date()
+    })
+    created: Date;
 }
