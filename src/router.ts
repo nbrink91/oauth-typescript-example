@@ -5,7 +5,7 @@ import container from './container';
 const router = express.Router();
 const controller = container.resolve(Controller);
 
-router.get('/', controller.statusCheck);
-router.post('/token', controller.postToken);
+router.get('/', (req, res) => controller.statusCheck(req, res));
+router.post('/token', (req, res) => controller.postToken(req, res));
 
 export default router;
