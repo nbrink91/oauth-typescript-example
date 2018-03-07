@@ -1,15 +1,11 @@
 import "reflect-metadata";
-import express from 'express';
-import { createConnection } from 'typeorm';
 import db from './db';
-import router from './router';
+import container from './container';
+import { InversifyExpressServer } from 'inversify-express-utils';
 
-const app = express();
+const server = new InversifyExpressServer(container);
 
 db.then(() => {
-    app.use('/v2/oauth', router);
-
-    app.listen(3000, () => {
-        console.log("App started on port 3000.")
-    });
+    const app = server.build();
+    app.listen(3000, () => console.log("Server running on port 3000..."))
 }).catch(console.error);
